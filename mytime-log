@@ -29,6 +29,6 @@ do
 	else ((time-=$timestamp)); fi
 	genTitleHash "$title"
 	echo -n "t:$time,i:$idle,h:$hash"
-	if [[ $hash_new == 1 ]]; then echo -n ',t:"'$title'"'; fi
+	if [[ $hash_new == 1 ]]; then echo -n ',T:"'$title'"'; fi
 	echo "},"
 done >> $FNAME
