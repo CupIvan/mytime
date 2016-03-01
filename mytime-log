@@ -1,0 +1,34 @@
+#!/bin/sh
+# @author: CupIvan <mail@cupivan.ru>
+# @date:   01.03.2016
+# @depends: md5sum
+
+DIR="."
+if [[ "$1" != "" ]]; then DIR=$1; fi
+DIR=$DIR/`date +%Y-%m`
+mkdir -p $DIR 2>/dev/null
+FNAME=$DIR/`date +%Y-%m-%d.json`
+
+# title hash
+declare -A hash
+hash_ck=1
+hash_new=0
+function genTitleHash()
+{
+	md5=`echo "$1" | md5sum | awk '{ print $1 }'`
+	code=${hash[$md5]}; hash_new=0
+	if [[ "$code" == "" ]]; then hash[$md5]=$hash_ck; ((hash_ck++)); hash_new=1; fi
+	hash=${hash[$md5]}
+}
+
+# main loop
+while read time idle title
+do
+	echo -n "{"
+	if [[ "$timestamp" == "" ]]; then timestamp=$time; echo -n "timestamp:$time,"; time=0
+	else ((time-=$timestamp)); fi
+	genTitleHash "$title"
+	echo -n "t:$time,i:$idle,h:$hash"
+	if [[ $hash_new == 1 ]]; then echo -n ',t:"'$title'"'; fi
+	echo "},"
+done >> $FNAME
