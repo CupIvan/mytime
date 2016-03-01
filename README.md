@@ -7,3 +7,6 @@ The programm consist of several modules:
 
 Simple usage (put it to *~/.xinitrc*):
 `mytime-daemon | mytime-log ~/log/time &`
+
+You may also install chrome extension from *./chrome/* directory
+for register domain name of the current page.
