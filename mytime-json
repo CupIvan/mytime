@@ -1,0 +1,56 @@
+#!/usr/bin/php
+<?php
+/**
+ * Simple compressor for time logs to JSON
+ * @author CupIvan <mail@cupivan.ru>
+ * @date   01.03.2016
+ */
+
+$fname = @$_SERVER['argv'][1];
+$fname = '../../logs/time/2016-03/2016-03-24.raw';
+
+$hash = [];
+
+$list = file($fname);
+$json = [];
+$last_title = ''; $last_timestamp = 0;
+$start_timestamp = 0;
+foreach ($list as $a)
+{
+	$x = [];
+	list($timestamp, $idle, $title) = explode("\t", trim($a));
+	$x['timestamp'] = $timestamp;
+	$x['i'] = $idle;
+	$x['T'] = $title;
+
+	if (!isset($hash[$title])) $hash[$title] = count($hash); else unset($x['T']);
+	$x['H'] = $hash[$title];
+
+	$x['t'] = $x['timestamp'] - $start_timestamp;
+	if ($x['t'] >= 100)
+	{
+		$start_timestamp = $x['timestamp'];
+		unset ($x['t']);
+	}
+	else
+		unset($x['timestamp']);
+
+	if ($title == $last_title)
+	{
+		$i = count($json) - 1;
+		$json[$i]['dt'] = $timestamp - $last_timestamp;
+		$json[$i]['i']  = max($idle, $json[$i]['i']);
+		if (isset($x['timestamp'])) $start_timestamp = -999999;
+		continue;
+	} else {
+		$last_title = $title;
+		$last_timestamp = $timestamp;
+	}
+
+	array_push($json, $x);
+}
+
+$json = json_encode($json, JSON_UNESCAPED_UNICODE);
+$json = str_replace('},{', "},\n{", $json)."\n";
+//echo $json;
+file_put_contents(str_replace('.raw', '.json', $fname), $json);

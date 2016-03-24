@@ -1,30 +1,7 @@
 #!/bin/sh
-# @author: CupIvan <mail@cupivan.ru>
-# @date:   01.03.2016
-# @depends: xorg-xdpyinfo, xorg-xwininfo, xprintidle
 
-# title of active window
-function getActiveWindow()
-{
-	id=`xdpyinfo | grep focus | awk '{ print $3 }'`;
-	title=`xwininfo -id $id -children | grep Window | grep '"' | sed -r 's/.+"(.+)"/\1/'`
-	if [[ "$title" == "" ]]; then
-	title=`xwininfo -id $id -children | grep Parent | grep '"' | sed -r 's/.+"(.+)"/\1/'`
-	fi
-	echo $title
-}
-
-# idle in seconds
-function getIdle()
-{
-	idle=`xprintidle`
-	idle=$((idle/1000))
-	echo $idle
-}
-
-# main loop
 while true
 do
-	echo `date +%s` `getIdle` `getActiveWindow`;
-	sleep 1s;
+	mytime-monitor | mytime-log $HOME/logs/time/
+	sleep 1s
 done

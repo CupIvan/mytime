@@ -3,7 +3,6 @@
 	"name" : "Domain in title",
 	"version" : "1.0",
 	"description" : "Show current domain name in page title",
-	"date": "01.03.2016",
 	"content_scripts": [{
 		"matches": ["*://*/*"],
 		"js": ["domain_in_title.user.js"],
